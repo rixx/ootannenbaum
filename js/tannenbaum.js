@@ -174,6 +174,7 @@ function pflanzeBaum () {
   baum.onMouseLeave = function (event) { canvas.style.cursor = "default"; }
   baum.position = findBaumLocation(breit, unten - startOben)
   wald.push(baum)
+  document.title = "∞ Tannenbaum " + "🎄".repeat(wald.length)
   waldSortieren()
 }
 
