@@ -53,3 +53,74 @@ canvas#tannenbaum {
 #sidebar #options {
     margin-bottom: 16px;
 }
+#sidebar #options div {
+    position: relative;
+    display: block;
+}
+
+#sidebar #ebenen {
+    display: flex;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+    justify-content: left;
+    align-items: baseline;
+    min-height: 60px;
+}
+#sidebar #ebenen > * {
+    margin-right: 8px
+}
+#sidebar #ebenen input {
+    width: 20px;
+    min-height: 30px;
+}
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0;
+}
+input[type=number] {
+    -moz-appearance:textfield;
+}
+
+/* CHECKBOX STYLING */
+input[type=checkbox] + label {
+    cursor: pointer;
+    display: inherit !important;
+    position: relative;
+    padding-left: 35px;
+    padding-bottom: 6px;
+    padding-top: 6px;
+}
+input[type=checkbox] + label::before, input[type=checkbox]::after {
+    content: " " !important;
+    position: absolute;
+    display: inline-block;
+}
+input[type=checkbox] + label::before {
+    left: 0;
+    width: 24px;
+    height: 24px;
+    background: white;
+    box-shadow: 0 0 1px #777;
+}
+input[type=checkbox] + label::after {
+    top: 6px;
+    left: 4px;
+    width: 16px;
+    height: 16px;
+    margin: 4px 0px 0;
+    opacity: 0;
+    background: #238268;
+}
+input[type=checkbox] {
+    position: absolute;
+    left: 0;
+    opacity: 0;
+}
+input[type=checkbox]:checked + label::after {
+    opacity: 1;
+    position: absolute;
+    content: " ";
+}

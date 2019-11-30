@@ -56,7 +56,10 @@ function generateBaum () {
   var breit = 70 + zufallszahl(0, 120)
   var links = 0
   var rechts = 0
-  var ebenen = zufallszahl(1, 10)
+  var ebenen = zufallszahl(
+    Number.parseInt(document.querySelector("#minLayers").value) || 1,
+    Number.parseInt(document.querySelector("#maxLayers").value) + 1 || 10
+  )
   var hochverlauf = zufallszahl(0, 2)
   var breitverlauf = zufallszahl(0, 2)
   var istGebogen = zufallszahl(0, 3)
