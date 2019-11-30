@@ -31,22 +31,37 @@ canvas#tannenbaum {
     border-radius: 4px;
     cursor: pointer;
 }
-#sidebar button#generate {
+#sidebar #actions {
+    display: flex;
+}
+#sidebar #actions button {
     height: 40px;
-    background-color: #238268;
     color: white;
-    border-color: #2f7662;
     font-size: 28px;
+    width: 50%;
+}
+#sidebar button#reset {
+    background-color: #82233C;
+    border-color: #8e1737;
+    margin-right: 8px;
+}
+#sidebar button#add {
+    background-color: #238268;
+    border-color: #2f7662;
+    margin-left: 8px;
 }
 #sidebar #downloads {
     display: flex;
-    justify-content: space-around;
+    justify-content: left;
+}
+#sidebar #downloads > * {
+    margin-right: 16px;
 }
 #sidebar #downloads button {
     margin-top: 8px;
-    background-color: #82233C;
+    background-color: #08496e;
     color: white;
-    border-color: #8e1737;
+    border-color: #012940;
     font-size: 16px;
     height: 30px;
 }

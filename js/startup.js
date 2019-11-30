@@ -5,6 +5,7 @@ window.onload = function() {
 	w = paper.project.view.bounds.width;
 	compgroup = new Group();
 	generateLandschaft();
-	generateBaum();
-	document.querySelector("button#generate").addEventListener("click", generateBaum)
+	waldRoden();
+	document.querySelector("button#reset").addEventListener("click", waldRoden)
+	document.querySelector("button#add").addEventListener("click", pflanzeBaum)
 } 

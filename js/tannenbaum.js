@@ -1,6 +1,6 @@
-var baum = null;
 var canvas = document.querySelector("canvas")
 var schnee = null;
+var wald = [];
 
 function zufallszahl(min, max) {
   // Minimum ist inklusive, maximum ist exklusive
@@ -38,13 +38,8 @@ function findBaumLocation(breit, hoch) {
   }
 }
 
-function generateBaum () {
-
-  if (baum) {
-    baum.remove()
-  }
-  baum = new Group()
-
+function pflanzeBaum () {
+  var baum = new Group()
   var featureFarbe = document.querySelector("#featureFarbe").checked;
   var featureRotation = document.querySelector("#featureRotation").checked;
   var featureTransparent = document.querySelector("#featureTransparent").checked;
@@ -174,10 +169,31 @@ function generateBaum () {
   baum.addChild(stamm)
   stamm.sendToBack()
   baum.addTo(paper.project)
-  baum.onclick = generateBaum;
+  baum.onclick = pflanzeBaum;
   baum.onMouseEnter = function (event) { canvas.style.cursor = "pointer"; }
   baum.onMouseLeave = function (event) { canvas.style.cursor = "default"; }
   baum.position = findBaumLocation(breit, unten - startOben)
+  wald.push(baum)
+  waldSortieren()
+}
+
+function waldRoden () {
+  wald.forEach(baum => baum.remove())
+  wald = []
+  pflanzeBaum()
+}
+
+function waldSortieren () {
+  wald.sort((baum1, baum2) => {
+    return baum2.bounds.y + baum2.bounds.height - baum1.bounds.y - baum1.bounds.height
+  })
+  for (position = 0; position < wald.length; position++) {
+    var baum1 = wald[position]
+    for (innerPosition=position; innerPosition < wald.length; innerPosition++) {
+      var baum2 = wald[innerPosition]
+      baum1.insertAbove(baum2)
+    }
+  }
 }
 
 function downloadSVG(){
