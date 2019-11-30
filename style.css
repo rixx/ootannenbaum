@@ -1,0 +1,19 @@
+body {
+    margin: 0;
+}
+canvas#tannenbaum {
+    width: 100%;
+    height: 100vh;
+    background: rgb(9,76,114);
+	background: linear-gradient(180deg, rgb(1,41,63) 0%, rgb(9,76,114) 100%);
+}
+div#foreground-hill {
+    width: 100%;
+    display: block;
+    position: absolute;
+    bottom: 0;
+    clip-path: ellipse(90vw 100% at 20% 100%);
+    height: 20vh;
+    background-color: white;
+    z-index: 100;
+}
