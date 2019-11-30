@@ -8,13 +8,14 @@ function zufallszahl(min, max) {
 }
 
 function generateLandschaft () {
+  var isTiny = paper.view.size.height < 700
   schnee = new Path(
     new Point(0, paper.view.size.height),
-    new Point(0, paper.view.size.height * 0.55),
+    new Point(0, paper.view.size.height * (isTiny ? 0.5 : 0.55)),
   );
   schnee.arcTo(
-    new Point(paper.view.size.width * 0.7, paper.view.size.height * 0.65),
-    new Point(paper.view.size.width, paper.view.size.height * 0.75),
+    new Point(paper.view.size.width * 0.7, paper.view.size.height * (isTiny ? 0.55 : 0.65)),
+    new Point(paper.view.size.width, paper.view.size.height * (isTiny ? 0.60 : 0.75)),
   );
   schnee.add(new Point(paper.view.size.width, paper.view.size.height))
   schnee.add(new Point(0, paper.view.size.height))
@@ -24,6 +25,10 @@ function generateLandschaft () {
 
 function findBaumLocation(breit, hoch) {
   // muss den Mittelpunkt zurückgeben
+  if (paper.view.size.width < 700) {
+    var sidebarHeight = document.querySelector("#sidebar").getBoundingClientRect().height
+    return new Point(paper.view.size.width / 2, paper.view.size.height - sidebarHeight - 30 - hoch / 2)
+  }
   var nutzbarBreit = paper.view.size.width - 300 - breit
   var nutzbarHoch = paper.view.size.height - hoch
   var point = null;
@@ -44,25 +49,35 @@ function pflanzeBaum () {
   var featureRotation = document.querySelector("#featureRotation").checked;
   var featureTransparent = document.querySelector("#featureTransparent").checked;
 
-  var mitte = 0
-  var unten = 0
+  var hochverlauf = zufallszahl(0, 2)
+  var breitverlauf = zufallszahl(0, 2)
   var hoch = 50 + zufallszahl(30, 80)
-  var startOben = unten - hoch
   var breit = 70 + zufallszahl(0, 120)
-  var links = 0
-  var rechts = 0
   var ebenen = zufallszahl(
     Number.parseInt(document.querySelector("#minLayers").value) || 1,
     Number.parseInt(document.querySelector("#maxLayers").value) + 1 || 10
   )
-  var hochverlauf = zufallszahl(0, 2)
-  var breitverlauf = zufallszahl(0, 2)
-  var istGebogen = zufallszahl(0, 3)
+      unten = unten + 50
+      breit = breit + 30 * (breitverlauf * 0.25 + 1)
+      hoch = hoch + 10 * (hochverlauf * 0.5 + 1)
+  while ((hoch + 10 * (hochverlauf * 0.5 + 1)) * ebenen > paper.view.size.height) {
+    ebenen -= 1;
+  }
+  while (breit + (30 * (breitverlauf * 0.25 + 1)) * ebenen > paper.view.size.height) {
+    breit -= 10;
+  }
+
+  var mitte = 0
+  var unten = 0
+  var links = 0
+  var rechts = 0
+  var startOben = unten - hoch
 
   var rot = zufallszahl(0, 100) / 255
   var gruen = zufallszahl(115, 255) / 255
   var blau = zufallszahl(40, 130) /255
 
+  var istGebogen = zufallszahl(0, 3)
   var farbverlauf = zufallszahl(2, 7)
   var strichbreite = zufallszahl(featureFarbe ? 0 : 1, 6)
   var strichhelle = Math.random() * 0.25
