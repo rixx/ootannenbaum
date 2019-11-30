@@ -1,5 +1,6 @@
 var baum = null;
 var canvas = document.querySelector("canvas")
+var schnee = null;
 
 function zufallszahl(min, max) {
   // Minimum ist inklusive, maximum ist exklusive
@@ -7,7 +8,7 @@ function zufallszahl(min, max) {
 }
 
 function generateLandschaft () {
-  var schnee = new Path(
+  schnee = new Path(
     new Point(0, paper.view.size.height),
     new Point(0, paper.view.size.height * 0.55),
   );
@@ -21,6 +22,22 @@ function generateLandschaft () {
   schnee.fillColor = "white"
 }
 
+function findBaumLocation(breit, hoch) {
+  // muss den Mittelpunkt zurückgeben
+  var nutzbarBreit = paper.view.size.width - 300 - breit
+  var nutzbarHoch = paper.view.size.height - hoch
+  var point = null;
+  while (true) {
+    point = new Point(
+      zufallszahl(0, nutzbarBreit) + (breit / 2),
+      zufallszahl(0, nutzbarHoch) + hoch
+    )
+    if (schnee.contains(point)) {
+      return new Point(point.x, point.y - (hoch / 2))
+    }
+  }
+}
+
 function generateBaum () {
 
   if (baum) {
@@ -28,13 +45,14 @@ function generateBaum () {
   }
   baum = new Group()
 
-  var featureRotation = 0;
-  var featureTransparent = 0;
-  var featureFarbe = 1;
+  var featureFarbe = document.querySelector("#featureFarbe").checked;
+  var featureRotation = document.querySelector("#featureRotation").checked;
+  var featureTransparent = document.querySelector("#featureTransparent").checked;
 
-  var mitte = 400
-  var unten = 200
+  var mitte = 0
+  var unten = 0
   var hoch = 50 + zufallszahl(30, 80)
+  var startOben = unten - hoch
   var breit = 70 + zufallszahl(0, 120)
   var links = 0
   var rechts = 0
@@ -156,11 +174,12 @@ function generateBaum () {
   baum.onclick = generateBaum;
   baum.onMouseEnter = function (event) { canvas.style.cursor = "pointer"; }
   baum.onMouseLeave = function (event) { canvas.style.cursor = "default"; }
+  baum.position = findBaumLocation(breit, unten - startOben)
 }
 
 function downloadSVG(){
     // via bleeptrack, https://cccamp19.bleeptrack.de/
-    var svg = project.exportSVG({ asString: true });    
+    var svg = project.exportSVG({ asString: true });
     var svgBlob = new Blob([svg], {type:"image/svg+xml;charset=utf-8"});
     var svgUrl = URL.createObjectURL(svgBlob);
     var downloadLink = document.createElement("a");
