@@ -1,11 +1,32 @@
+var baum = null;
+var canvas = document.querySelector("canvas")
+
 function zufallszahl(min, max) {
   // Minimum ist inklusive, maximum ist exklusive
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-wald = []
+function generateLandschaft () {
+  var schnee = new Path(
+    new Point(0, paper.view.size.height),
+    new Point(0, paper.view.size.height * 0.55),
+  );
+  schnee.arcTo(
+    new Point(paper.view.size.width * 0.7, paper.view.size.height * 0.65),
+    new Point(paper.view.size.width, paper.view.size.height * 0.75),
+  );
+  schnee.add(new Point(paper.view.size.width, paper.view.size.height))
+  schnee.add(new Point(0, paper.view.size.height))
+  schnee.closePath();
+  schnee.fillColor = "white"
+}
 
 function generateBaum () {
+
+  if (baum) {
+    baum.remove()
+  }
+  baum = new Group()
 
   var featureRotation = 0;
   var featureTransparent = 0;
@@ -58,7 +79,7 @@ function generateBaum () {
       star.rotate(180)
       star.shadowColor = new Color(sternRot, sternGruen, sternBlau)
       star.shadowBlur = 30
-
+      baum.addChild(star)
   }
 
   for (var schleife = 0; schleife < ebenen; schleife++) {
@@ -106,6 +127,7 @@ function generateBaum () {
       dreieck.strokeWidth = strichbreite
       dreieck.alpha = transparenz
       dreieck.rotate(rotationsRichtung * rotation * schleife)
+      baum.addChild(dreieck)
       dreieck.sendToBack()
 
       unten = unten + 50
@@ -128,5 +150,34 @@ function generateBaum () {
   stamm.strokeColor = new Color(stammRot, stammGruen, stammBlau)
   stamm.strokeWidth = strichbreite
   stamm.strokeColor.brightness -= strichhelle
+  baum.addChild(stamm)
   stamm.sendToBack()
+  baum.addTo(paper.project)
+  baum.onclick = generateBaum;
+  baum.onMouseEnter = function (event) { canvas.style.cursor = "pointer"; }
+  baum.onMouseLeave = function (event) { canvas.style.cursor = "default"; }
+}
+
+function downloadSVG(){
+    // via bleeptrack, https://cccamp19.bleeptrack.de/
+    var svg = project.exportSVG({ asString: true });    
+    var svgBlob = new Blob([svg], {type:"image/svg+xml;charset=utf-8"});
+    var svgUrl = URL.createObjectURL(svgBlob);
+    var downloadLink = document.createElement("a");
+    downloadLink.href = svgUrl;
+    downloadLink.download = "tannenbaum.svg";
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+}
+
+function downloadPNG(){
+    // via bleeptrack, https://cccamp19.bleeptrack.de/
+    var canvas = document.getElementById("tannenbaum");
+    var downloadLink = document.createElement("a");
+    downloadLink.href = canvas.toDataURL("image/png;base64");
+    downloadLink.download = "tannenbaum.png";
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
 }
