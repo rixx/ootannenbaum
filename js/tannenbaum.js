@@ -8,7 +8,8 @@ function zufallszahl(min, max) {
 }
 
 function generateLandschaft () {
-  var isTiny = paper.view.size.height < 700
+  // Generiert den Hintergrund
+  var isTiny = paper.view.size.height < 700  // Anderer Hintergrund für Handys
   schnee = new Path(
     new Point(0, paper.view.size.height),
     new Point(0, paper.view.size.height * (isTiny ? 0.5 : 0.55)),
@@ -25,14 +26,14 @@ function generateLandschaft () {
 
 function findBaumLocation(breit, hoch) {
   // muss den Mittelpunkt zurückgeben
-  if (paper.view.size.width < 700) {
+  if (paper.view.size.width < 700) {  // Auf Handys ist der Baum immer mittig
     var sidebarHeight = document.querySelector("#sidebar").getBoundingClientRect().height
     return new Point(paper.view.size.width / 2, paper.view.size.height - sidebarHeight - 30 - hoch / 2)
   }
-  var nutzbarBreit = paper.view.size.width - 300 - breit
+  var nutzbarBreit = paper.view.size.width - 300 - breit  // 300 ist die Breite der Sidebar
   var nutzbarHoch = paper.view.size.height - hoch
   var point = null;
-  while (true) {
+  while (true) {  // Wir nehmen uns so lange Punkte, bis wir einen finden, der im Schnee liegt
     point = new Point(
       zufallszahl(0, nutzbarBreit) + (breit / 2),
       zufallszahl(0, nutzbarHoch) + hoch
@@ -44,28 +45,23 @@ function findBaumLocation(breit, hoch) {
 }
 
 function pflanzeBaum () {
+  // Generiert einen neuen Baum, und sortiert ihn im Wald ein
+  var isTiny = paper.view.size.height < 700  // Anderer Hintergrund für Handys
   var baum = new Group()
+
   var featureFarbe = document.querySelector("#featureFarbe").checked;
   var featureRotation = document.querySelector("#featureRotation").checked;
   var featureTransparent = document.querySelector("#featureTransparent").checked;
 
-  var hochverlauf = zufallszahl(0, 2)
-  var breitverlauf = zufallszahl(0, 2)
-  var hoch = 50 + zufallszahl(30, 80)
-  var breit = 70 + zufallszahl(0, 120)
+  var hochverlauf = zufallszahl(0, 2)  // Wie sehr wird der Baum höher
+  var breitverlauf = zufallszahl(0, 2)  // Wie sehr wird der Baum breiter
+  var hoch = 50 + zufallszahl(30, 80)  // Wie hoch ist die erste Ebene
+  var breit = 70 + zufallszahl(0, 120)  // Wie breit ist die erste Ebene
+  var abstand = zufallszahl(30, 70)  // Wie weit sind die Ebenen auseinander
   var ebenen = zufallszahl(
     Number.parseInt(document.querySelector("#minLayers").value) || 1,
     Number.parseInt(document.querySelector("#maxLayers").value) + 1 || 10
   )
-      unten = unten + 50
-      breit = breit + 30 * (breitverlauf * 0.25 + 1)
-      hoch = hoch + 10 * (hochverlauf * 0.5 + 1)
-  while ((hoch + 10 * (hochverlauf * 0.5 + 1)) * ebenen > paper.view.size.height) {
-    ebenen -= 1;
-  }
-  while (breit + (30 * (breitverlauf * 0.25 + 1)) * ebenen > paper.view.size.height) {
-    breit -= 10;
-  }
 
   var mitte = 0
   var unten = 0
@@ -91,13 +87,17 @@ function pflanzeBaum () {
       rotation = zufallszahl(50, 70) / 100
       rotationsRichtung = zufallszahl(-1, 1)
   }
+  var stammOffset = rotationsRichtung ? 10 : 0
+  var stammHoch = zufallszahl(10, 60) + stammOffset
 
-  if (zufallszahl(0, 2)) {
+  var sternHoch = 0;
+  if (zufallszahl(0, 2)) {  // Etwa zwei von drei Bäumen bekommen einen Stern
+      sternHoch = zufallszahl(20, 30) * 2
       var star = new Path.Star(
           new Point(mitte, unten - hoch),
           zufallszahl(5, 8),
           zufallszahl(5, 15),
-          zufallszahl(20, 30)
+          sternHoch / 2,
       )
       var sternRot = zufallszahl(230, 255) / 255
       var sternGruen = (zufallszahl(0, 2) ? zufallszahl(0, 50) : zufallszahl(200, 255))/ 255
@@ -113,7 +113,23 @@ function pflanzeBaum () {
       baum.addChild(star)
   }
 
+  // Nur so viele Ebenen, wie aufs Bild passen
+  var maxHeight = paper.view.size.height
+  var maxWidth = paper.view.size.width - 300
+  if (isTiny) {  // Auf Telefonen wandert die Sidebar von der Seite nach unten
+    maxWidth += 300
+    maxHeight -= document.querySelector("#sidebar").getBoundingClientRect().height
+  }
+  while (ebenen * abstand + hoch + stammHoch + sternHoch > maxHeight) {  // Wir nehmen Ebenen weg, bis der Baum ins Bild passt
+    ebenen -= 1;
+  }
+  breit = Math.min(breit, maxWidth)  // Die erste Ebene darf höchstens so breit sein wie das Bild
+  while (breit + (ebenen * (30 * (breitverlauf * 0.25 + 1))) > maxWidth) {  // Wir nehmen Ebenen weg, bis der Baum ins Bild passt
+    ebenen -= 1;
+  }
+
   for (var schleife = 0; schleife < ebenen; schleife++) {
+      // Jeder Schleifendurchgang generiert eine Ebene im Baum
       links = mitte - (breit / 2)
       rechts = mitte + (breit / 2)
       var linksPunkt = new Point(links, unten)
@@ -132,7 +148,7 @@ function pflanzeBaum () {
               ) : mittelPunkt,
               mittelPunkt
           )
-      } catch (e) {
+      } catch (e) {  // Wenn wir den Bogen nicht malen können, nehmen wir eine gerade Linie
           dreieck.add(mittelPunkt)
       }
       try {
@@ -143,7 +159,7 @@ function pflanzeBaum () {
               ) : linksPunkt,
               linksPunkt
           )
-      } catch (e) {
+      } catch (e) {  // Wenn wir den Bogen nicht malen können, nehmen wir eine gerade Linie
           dreieck.add(linksPunkt)
       }
       dreieck.closePath()
@@ -158,19 +174,21 @@ function pflanzeBaum () {
       dreieck.strokeWidth = strichbreite
       dreieck.alpha = transparenz
       dreieck.rotate(rotationsRichtung * rotation * schleife)
+
+      // Wir fügen das Dreieck zum Baum hinzu, und setzen es hinter die bisherigen Dreiecke
       baum.addChild(dreieck)
       dreieck.sendToBack()
 
-      unten = unten + 50
+      // Für den nächsten Schleifendurchgang verändern wir Ausgangspunkt, Breite und Höhe
+      unten = unten + abstand
       breit = breit + 30 * (breitverlauf * 0.25 + 1)
       hoch = hoch + 10 * (hochverlauf * 0.5 + 1)
   }
 
-  var stammOffset = rotationsRichtung ? 10 : 0
-  var stammHoch = zufallszahl(10, 60) + stammOffset
+  // Hier zeichnen wir den Stamm
   var stammBreit = Math.min(zufallszahl(20, 80), breit - 40)
   var stamm = new Path.Rectangle(
-      new Point(mitte - (stammBreit / 2), unten - 50 - stammOffset),
+      new Point(mitte - (stammBreit / 2), unten - abstand - stammOffset),
       new Size(stammBreit, stammHoch)
   )
 
@@ -183,28 +201,46 @@ function pflanzeBaum () {
   stamm.strokeColor.brightness -= strichhelle
   baum.addChild(stamm)
   stamm.sendToBack()
+
+  // Der Baum wird zum Projekt hinzugefügt. Das macht, dass er mit auf den exportierten Bildern ist
   baum.addTo(paper.project)
-  baum.onclick = pflanzeBaum;
+
+  // Der Cursor soll zeigen, dass der Baum anklickbar ist
   baum.onMouseEnter = function (event) { canvas.style.cursor = "pointer"; }
   baum.onMouseLeave = function (event) { canvas.style.cursor = "default"; }
+
+  // Wenn man auf den Baum klickt, wird noch einer gepflanzt
+  baum.onClick = isTiny ? waldRoden : pflanzeBaum;
+
+  // Hier finden wir einen guten Ort: So, dass nichts aus dem Browser ragt
+  // Für Handys ist der Baum immer mittig
   baum.position = findBaumLocation(breit, unten - startOben)
+
+  // Wir legen den Baum mit in unsere Wald-Liste, die wir dann sortieren
+  // Das Sortieren macht, dass Bäume, die weiter vorne sind, über denen liegen, die weiter hinten sind.
   wald.push(baum)
-  document.title = "∞ Tannenbaum " + "🎄".repeat(wald.length)
   waldSortieren()
+
+  // Wir setzen die Anzahl der Bäume in den Seitentitel, weil wir es können
+  document.title = "∞ Tannenbaum " + "🎄".repeat(wald.length)
 }
 
 function waldRoden () {
+  // Hier löschen wir alle Bäume und legen einen neuen an
   wald.forEach(baum => baum.remove())
   wald = []
   pflanzeBaum()
 }
 
 function waldSortieren () {
+  // Wir sortieren den Wald danach, wo der Stamm des Baums unten endet
   wald.sort((baum1, baum2) => {
     return baum2.bounds.y + baum2.bounds.height - baum1.bounds.y - baum1.bounds.height
   })
-  for (position = 0; position < wald.length; position++) {
+  // Jetzt nehmen wir uns alle Paare von Bäumen, und legen jeweils den richtigen nach oben
+  for (position = 0; position < wald.length - 1; position++) {
     var baum1 = wald[position]
+
     for (innerPosition=position; innerPosition < wald.length; innerPosition++) {
       var baum2 = wald[innerPosition]
       baum1.insertAbove(baum2)
