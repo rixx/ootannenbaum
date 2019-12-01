@@ -93,6 +93,7 @@ function pflanzeBaum () {
   var sternHoch = 0;
   if (zufallszahl(0, 2)) {  // Etwa zwei von drei Bäumen bekommen einen Stern
       sternHoch = zufallszahl(20, 30) * 2
+      startOben -= sternHoch / 2
       var star = new Path.Star(
           new Point(mitte, unten - hoch),
           zufallszahl(5, 8),
@@ -214,7 +215,7 @@ function pflanzeBaum () {
 
   // Hier finden wir einen guten Ort: So, dass nichts aus dem Browser ragt
   // Für Handys ist der Baum immer mittig
-  baum.position = findBaumLocation(breit, unten - startOben)
+  baum.position = findBaumLocation(breit, (unten - abstand - stammOffset + stammHoch) - startOben)
 
   // Wir legen den Baum mit in unsere Wald-Liste, die wir dann sortieren
   // Das Sortieren macht, dass Bäume, die weiter vorne sind, über denen liegen, die weiter hinten sind.
