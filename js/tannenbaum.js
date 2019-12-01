@@ -73,7 +73,7 @@ function pflanzeBaum () {
   var gruen = zufallszahl(115, 255) / 255
   var blau = zufallszahl(40, 130) /255
 
-  var istGebogen = zufallszahl(0, 3)
+  var istGebogen = zufallszahl(0, 5)
   var farbverlauf = zufallszahl(2, 7)
   var strichbreite = zufallszahl(featureFarbe ? 0 : 1, 6)
   var strichhelle = Math.random() * 0.25
