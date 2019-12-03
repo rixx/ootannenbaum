@@ -12,7 +12,7 @@ canvas#tannenbaum {
     position: fixed;
     right: 0;
     top: 20%;
-    height: 40vh;
+    min-height: 20vh;
     width: 250px;
     background-color: white;
     z-index: 1000;
@@ -75,11 +75,9 @@ canvas#tannenbaum {
 
 #sidebar #ebenen {
     display: flex;
-    padding-bottom: 16px;
     margin-bottom: 16px;
     justify-content: left;
     align-items: baseline;
-    min-height: 60px;
 }
 #sidebar #ebenen > * {
     margin-right: 8px
@@ -146,6 +144,7 @@ input[type=checkbox]:checked + label::after {
         top: unset;
         right: unset;
         bottom: 0;
+        min-height: unset;
         height: auto;
         padding: 12px;
         border-top-left-radius: 0;
