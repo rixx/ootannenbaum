@@ -26,18 +26,17 @@ function zufallszahl(min, max) {
   // Minimum ist inklusive, maximum ist exklusive.
   return Math.floor(Math.random() * (max - min)) + min;
 }
-
 function generateLandschaft () {
   // Generiert den Hintergrund
-  var linksunten = new Point(0, paper.view.size.height)
-  var isTiny = paper.view.size.height < 700  // Etwas andere Schnee-Kurve für Handys
-  if (isTiny) {
-    schnee = new Path(linksunten, new Point(0, paper.view.size.height) * 0.5)
-    schnee.arcTo(new Point(paper.view.size.width * 0.7, paper.view.size.height * 0.6))
-  } else {
-    schnee = new Path(linksunten, new Point(0, paper.view.size.height) * 0.55)
-    schnee.arcTo(new Point(paper.view.size.width * 0.7, paper.view.size.height * 0.75))
-  }
+  var isTiny = paper.view.size.height < 700  // Anderer Hintergrund für Handys
+  schnee = new Path(
+    new Point(0, paper.view.size.height),
+    new Point(0, paper.view.size.height * (isTiny ? 0.5 : 0.55)),
+  );
+  schnee.arcTo(
+    new Point(paper.view.size.width * 0.7, paper.view.size.height * (isTiny ? 0.55 : 0.65)),
+    new Point(paper.view.size.width, paper.view.size.height * (isTiny ? 0.60 : 0.75)),
+  );
   schnee.add(new Point(paper.view.size.width, paper.view.size.height))
   schnee.add(new Point(0, paper.view.size.height))
   schnee.closePath();
